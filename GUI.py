@@ -33,6 +33,10 @@ class MyWin(QWidget):
         self.points=list()
         self.lines=list()
         self.InteFlag=0
+        self.Linepenpen=QPen(QColor('#000000'),2)
+        self.pointpen = QPen(QColor('#ff0000'), 2)
+        self.Linepenpen.style="DashLine"
+        self.Linepenpen.cap="RoundCap"
     def eventFilter(self, source, event):
 
         if (event.type() == QEvent.MouseButtonPress and
@@ -42,7 +46,7 @@ class MyWin(QWidget):
                 print('add point: (%d, %d)' % (pos.x(), pos.y()))
                 self.points.append(QPoint(pos))
                 self.PointFlag=0
-                self.scene.addEllipse(pos.x()-5,pos.y()-5,5,5)
+                self.scene.addEllipse(pos.x()-2.5,pos.y()-2.5,5,5,self.pointpen)
                 self.scene.update()
             if self.InteFlag>0:
                 if self.InteFlag==2:
@@ -54,10 +58,13 @@ class MyWin(QWidget):
                     else:
                         self.InteFlag+=1
                 else:
-                    self.lines[-1].setP2(self.getpoint(event.pos()))
-                    print('add line()',self.lines[-1].x1(),self.lines[-1].y1(),self.lines[-1].x2(),self.lines[-1].y2())
-                    self.scene.addLine(self.lines[-1].x1(),self.lines[-1].y1(),self.lines[-1].x2(),self.lines[-1].y2())
-                    self.scene.update()
+                    if self.getpoint(event.pos()) != None:
+                        self.lines[-1].setP2(self.getpoint(event.pos()))
+                        print('add line()',self.lines[-1].x1(),self.lines[-1].y1(),self.lines[-1].x2(),self.lines[-1].y2())
+                        self.scene.addLine(self.lines[-1].x1(),self.lines[-1].y1(),self.lines[-1].x2(),self.lines[-1].y2(),self.Linepenpen)
+                        self.scene.update()
+                    else:
+                        self.InteFlag+=1
                 self.InteFlag-=1
         return QWidget.eventFilter(self, source, event)
     def getpoint(self,a):
